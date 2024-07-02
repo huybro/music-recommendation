@@ -5,6 +5,8 @@ from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
 from preprocessing import music_df
+from flask import Flask, request, jsonify
+
 
 def cal_weighted_popularity(release_date):
     release_date = datetime.strptime(release_date, '%Y-%m-%d')

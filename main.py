@@ -4,9 +4,16 @@ import pandas as pd
 import requests
 import base64
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+api_key = os.getenv("API_KEY")
+api_secret = os.getenv("API_SECRET")
 #Client ID and Client Secret
-CLIENT_ID = 'c7b97118e56047b0ae0e9e820aa1217f'
-CLIENT_SECRET = 'd7174eeece6e4074a663f5441df186d6'
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 
 # Base64 encode the client ID and client secret
 client_credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
