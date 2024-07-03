@@ -7,6 +7,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from preprocessing import music_df
 from flask import Flask, request, jsonify
 
+app = Flask(__name__)
+
 
 def cal_weighted_popularity(release_date):
     release_date = datetime.strptime(release_date, '%Y-%m-%d')
@@ -65,4 +67,13 @@ recommendations = hybrid_recommendations(input_song_name, num_recommendations=5)
 print(f"Hybrid recommended songs for '{input_song_name}':")
 print(recommendations)
 
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    data = request.json
+    song_name = data.get('song_name')
+    num_recommendations = data.get('num_recommendations', 5)
+    recommendations = hybrid_recommendations(song_name, num_recommendations)
+    return recommendations.to_json(orient='records')
 
+if __name__ == '__main__':
+    app.run(debug=True)
