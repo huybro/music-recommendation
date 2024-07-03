@@ -1,21 +1,24 @@
 async function getRecommendations() {
     const spfUrl = document.getElementById('spotify-url').value
+    const songName = document.getElementById('song-name').value
+    document.getElementById('recommendations').innerHTML = ''
     if (!spfUrl) {
         alert('Please enter a Spotify URL');
         return;
     }
     playlist_id = extractPlaylistId(spfUrl)
+    console.log(playlist_id)
     if (!playlist_id) {
         alert('Invalid Spotify URL');
         return;
     }
     try {
-        const reponse =  await fetch('/recommend', {
+        const response =  await fetch('http://127.0.0.1:5000/recommend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ spotify_id: playlist_id, num_recommendations: 5 })
+            body: JSON.stringify({ spotify_id: playlist_id,song_name: songName})
         });
 
         if (!response.ok) {

@@ -9,10 +9,11 @@
 <body>
     <div class="container">
         <header>
-            <h1>Music Recommendation</h1>
+            <h1>Music Recommendation From Your Playlist</h1>
         </header>
         <main>
-            <input type="text" id="spotify-url" placeholder="Enter Spotify URL">
+            <input type="text" id="spotify-url" placeholder="Enter Spotify Playlist URL">
+            <input type="text" id="song-name" placeholder="Enter your favorite song in the Playlist">
             <button onclick="getRecommendations()">Get Recommendations</button>
             <div id="recommendations"></div>
         </main>

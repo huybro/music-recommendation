@@ -50,8 +50,7 @@ def get_data(playlist_id, access_token):
         }
         data.append(track_data)
     df = pd.DataFrame(data)
+    print(df)
     return df
     
-playlist_id = '37i9dQZF1E39wSQy5h80F6'
-music_df = get_data(playlist_id, access_token)
 

@@ -1,13 +1,14 @@
 import pandas as pd
 import numpy as np
+from preprocessing import get_data
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 from sklearn.metrics.pairwise import cosine_similarity
-from preprocessing import music_df
-from flask import Flask, request, jsonify
+from flask import Flask, send_from_directory, jsonify, request
+from main import access_token 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='public')
 
 
 def cal_weighted_popularity(release_date):
@@ -16,7 +17,7 @@ def cal_weighted_popularity(release_date):
 
     return 1 / (time_span.days + 1)
 
-def normalize():
+def normalize(music_df):
     scaler = MinMaxScaler()
     music_features = music_df[['Danceability', 'Energy', 'Key', 
                                 'Loudness', 'Mode', 'Speechiness', 'Acousticness',
@@ -24,26 +25,27 @@ def normalize():
     music_features_scaled = scaler.fit_transform(music_features)
     return music_features_scaled
 
-def content_based_recommendations(input_song_name, num_recommendations=5):
+def content_based_recommendations(input_song_name,music_df,num_recommendations=5):
     if input_song_name not in music_df['Track Name'].values:
         print(f"'{input_song_name}' not found in the dataset. Please enter a valid song name.")
         return
 
     input_song_index = music_df[music_df['Track Name'] == input_song_name].index[0]
 
-    music_features_scaled = normalize()
+    music_features_scaled = normalize(music_df)
     similarity_scores = cosine_similarity([music_features_scaled[input_song_index]], music_features_scaled)
     similar_song_indices = similarity_scores.argsort()[0][::-1][1:num_recommendations + 1]
 
     content_based_recommendations = music_df.iloc[similar_song_indices][['Track Name', 'Artists', 'Album Name', 'Release Date', 'Popularity']]
     return content_based_recommendations
 
-def hybrid_recommendations(input_song_name, num_recommendations=5, alpha=0.5):
+def hybrid_recommendations(input_song_name, playlist_id ,num_recommendations=5, alpha=0.5):
+    music_df = get_data(playlist_id,access_token)
     if input_song_name not in music_df['Track Name'].values:
         print(f"'{input_song_name}' not found in the dataset. Please enter a valid song name.")
         return
-
-    content_based_rec = content_based_recommendations(input_song_name, num_recommendations)
+    
+    content_based_rec = content_based_recommendations(input_song_name,music_df,num_recommendations)
     popularity_score = music_df.loc[music_df['Track Name'] == input_song_name, 'Popularity'].values[0]
     weighted_popularity_score = popularity_score * cal_weighted_popularity(music_df.loc[music_df['Track Name'] == input_song_name, 'Release Date'].values[0])
 
@@ -62,13 +64,23 @@ def hybrid_recommendations(input_song_name, num_recommendations=5, alpha=0.5):
 
     return hybrid_recommendations
 
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 
 @app.route('/recommend', methods=['POST'])
 def recommend():
     data = request.json
     song_name = data.get('song_name')
+    playlist_id = data.get('spotify_id')
+    print(playlist_id)
     num_recommendations = data.get('num_recommendations', 5)
-    recommendations = hybrid_recommendations(song_name, num_recommendations)
+
+    recommendations = hybrid_recommendations(song_name,playlist_id ,num_recommendations)
     return recommendations.to_json(orient='records')
 
 if __name__ == '__main__':
