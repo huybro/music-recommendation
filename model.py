@@ -62,10 +62,6 @@ def hybrid_recommendations(input_song_name, num_recommendations=5, alpha=0.5):
 
     return hybrid_recommendations
 
-input_song_name = 'Ngày Đẹp Trời Để Nói Chia Tay'
-recommendations = hybrid_recommendations(input_song_name, num_recommendations=5)
-print(f"Hybrid recommended songs for '{input_song_name}':")
-print(recommendations)
 
 @app.route('/recommend', methods=['POST'])
 def recommend():

@@ -1,0 +1,14 @@
+{
+  "name": "music-recommendation",
+  "version": "1.0.0",
+  "description": "A music recommendation system",
+  "main": "index.js",
+  "scripts": {
+    "start": "http-server ./ -o"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.12.3"
+  }
+}

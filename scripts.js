@@ -1,16 +1,16 @@
 async function getRecommendations() {
     const spfUrl = document.getElementById('spotify-url').value
-    if (!spotifyUrl) {
+    if (!spfUrl) {
         alert('Please enter a Spotify URL');
         return;
     }
     playlist_id = extractPlaylistId(spfUrl)
-    if (!spotifyId) {
+    if (!playlist_id) {
         alert('Invalid Spotify URL');
         return;
     }
     try {
-        const reponse =  await fetch('http://your-api-url/recommend', {
+        const reponse =  await fetch('/recommend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
