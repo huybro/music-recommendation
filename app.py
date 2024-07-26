@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from music_recommendation_app.preprocessing import get_data
+from preprocessing import get_data
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
@@ -8,8 +8,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 from flask import Flask, send_from_directory, jsonify, request
 from main import access_token
 import logging
+from ultils.db_utils import get_session, save_playlist_to_db, initialize_db
 
-app = Flask(__name__, static_folder='public')
+
+app = Flask(__name__, static_folder='static')
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -110,4 +112,5 @@ def recommend():
         return jsonify({"error": "An error occurred"}), 500
 
 if __name__ == '__main__':
+    initialize_db() 
     app.run(debug=True)
